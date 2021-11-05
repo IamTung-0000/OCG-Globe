@@ -1,6 +1,7 @@
 function createStatsGUI(){
 
     var thisParent;
+    const aboutGlobe = document.getElementById("aboutGlobeFull")
 
     //Create new Graph (FPS, MS, MB)
     stats1 = new Stats();
@@ -61,7 +62,7 @@ function createStatsGUI(){
     
     const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-    init("aboutGlobeFull");
+    init(aboutGlobe);
     main();
     render(); // remove when using next line for animation loop (requestAnimationFrame)
     animate();
@@ -87,7 +88,7 @@ function createStatsGUI(){
     
 
 
-    function init(targetId=null, showStat=true) {
+    function init(target=null, showStat=true) {
 
         scene = new THREE.Scene();
         scene.background = new THREE.Color( 0xcccccc );
@@ -95,9 +96,9 @@ function createStatsGUI(){
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        if (targetId) {
-            document.getElementById(targetId).appendChild( renderer.domElement );
+        renderer.setSize( target.offsetWidth, target.offsetHeight );
+        if (target) {
+            target.appendChild( renderer.domElement );
         } else {
             document.body.appendChild( renderer.domElement );
         }
@@ -107,7 +108,7 @@ function createStatsGUI(){
             document.body.appendChild( stats.dom );
         }
 
-        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
+        camera = new THREE.PerspectiveCamera( 60, target.offsetWidth / target.offsetHeight, 1, 1000 );
         camera.position.set( 400, 200, 0 );
 
 
@@ -294,9 +295,9 @@ function createStatsGUI(){
 
 
     function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
     }
 
     function animate() {
