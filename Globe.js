@@ -14,7 +14,7 @@ function createStatsGUI() {
     thisParent.appendChild( stats1.domElement );
 }
 
-const aboutGlobe = document.getElementById("aboutGlobeFull");
+const aboutGlobe = document.getElementById("aboutGlobe");
 
 import * as THREE from './build/three.module.js';
 import Stats from './jsm/libs/stats.module.js';
