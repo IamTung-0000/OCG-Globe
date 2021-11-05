@@ -61,7 +61,7 @@ function createStatsGUI(){
     
     const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-    init("myCanvas");
+    init("aboutGlobeFull");
     main();
     render(); // remove when using next line for animation loop (requestAnimationFrame)
     animate();
