@@ -208,7 +208,7 @@ function DrawGlobe() {
         transparent: true,
         side: THREE.DoubleSide,
         alphaTest: 0.5,
-        map: loader.load('./textures/earth_region.png'),
+        map: loader.load('https://iamtung-0000.github.io/OCG-Globe/textures/earth_region.png'),
         });
     
     const materialMesh = new THREE.Mesh(
