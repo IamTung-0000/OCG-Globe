@@ -1,7 +1,7 @@
 function createStatsGUI(){
 
     var thisParent;
-    const aboutGlobe = document.getElementById("aboutGlobeFull")
+    const aboutGlobe = document.getElementById("aboutGlobeFull");
 
     //Create new Graph (FPS, MS, MB)
     stats1 = new Stats();
@@ -13,7 +13,6 @@ function createStatsGUI(){
 
     //Add Stats to Document - modal 4
     thisParent.appendChild( stats1.domElement );  
-    }
 
     import * as THREE from './build/three.module.js';
     import Stats from './jsm/libs/stats.module.js';
