@@ -25,6 +25,7 @@ let cube;
 let material;
 let stats, container;
 let latitude, longitude;
+let strokeSize = 0.1;
 
 const objects = [];
 
@@ -92,10 +93,10 @@ function lglt2xyz(longitude,latitude,radius){
 function init(target=null, showStat=true) {
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xcccccc );
+    scene.background = new THREE.Color( 0xFFFFFF );
     scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true} );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( target.offsetWidth, target.offsetHeight );
     if (target) {
@@ -170,14 +171,14 @@ function getCurve(p1, p2) {
 
         p.multiplyScalar(1 + 0.2*Math.sin(Math.PI*i/pointCount))
         
-        console.log(p.x);
+        //console.log(p.x);
         points.push(p)
     }
 
     let path = new THREE.CatmullRomCurve3(points);
     //console.log(path);
 
-    const geometry = new THREE.TubeGeometry (path, 64, 0.5, 32, false);
+    const geometry = new THREE.TubeGeometry (path, 64, strokeSize, 32, false);
     const material = new THREE.MeshNormalMaterial();
     const mesh = new THREE.Mesh ( geometry, material);
     scene.add( mesh )
@@ -274,10 +275,6 @@ function DrawSphereDot() {
 }
 
 
-
-
-
-
 function Light() {
 
     const dirLight1 = new THREE.DirectionalLight( 0xffffff );
@@ -313,6 +310,7 @@ function animate() {
 
 function render() {
     
+    renderer.setClearColor( 0x000000, 0 ); // the default
     renderer.render( scene, camera );
 
 }
