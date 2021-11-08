@@ -1,14 +1,35 @@
+import * as THREE from './build/three.module.js';
+import Stats from './jsm/libs/stats.module.js';
+import { OrbitControls } from './jsm/controls/OrbitControls.js';
+
+import * as param from './Param.js'
+import * as country from './Country.js'
+import * as curve from './Curve.js'
+
+
+export let camera, controls, scene, renderer;
+export let cube;
+export let material;
+export let stats, container;
+export let latitude, longitude;
+
+let VietNam,American,China,Belarus,Cameroon 
+
+
+
+const objects = [];
+
 function createStatsGUI() {
 
     var thisParent;
 
     //Create new Graph (FPS, MS, MB)
-    stats1 = new Stats();
+    let stats1 = new Stats();
 
     //Display different panel
     stats1.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-    stats1.domElement.style.width = '200px';
-    stats1.domElement.style.height = '200px';
+    stats1.domElement.style.width = '400px';
+    stats1.domElement.style.height = '400px';
 
     //Add Stats to Document - modal 4
     thisParent.appendChild( stats1.domElement );
@@ -16,23 +37,6 @@ function createStatsGUI() {
 
 const aboutGlobe = document.getElementById("aboutGlobe");
 
-import * as THREE from './build/three.module.js';
-import Stats from './jsm/libs/stats.module.js';
-import { OrbitControls } from './jsm/controls/OrbitControls.js';
-
-let camera, controls, scene, renderer;
-let cube;
-let material;
-let stats, container;
-let latitude, longitude;
-let strokeSize = 0.1;
-
-const objects = [];
-
-
-const sphereLon = 50
-const sphereLat = sphereLon/2;
-const globeRadius = 100;
 
 
 const TransformMatrix = function () {
@@ -44,7 +48,7 @@ const TransformMatrix = function () {
 
     return function ( matrix ) {
 
-        const cubePos = lglt2xyz(latitude, longitude, globeRadius); 
+        const cubePos = lglt2xyz(latitude, longitude, param.globeRadius); 
 
         position.x = cubePos.x;
         position.y = cubePos.y;
@@ -62,6 +66,7 @@ const TransformMatrix = function () {
 
 }();
 
+
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 init(aboutGlobe);
@@ -74,20 +79,22 @@ function degreeToRadian(angle) {
         return angle * radians;
     }
 
-function map_range(value, low1, high1, low2, high2) {
-    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-}
-
 //longtidude, latitude to XYZ
-function lglt2xyz(longitude,latitude,radius){
-    const r = degreeToRadian(90 - longitude)
-    const s = degreeToRadian(latitude + (180));
-    const x = (-radius * Math.sin(r) * Math.cos(s));
-    const y = (radius * Math.cos(r));
-    const z = (radius * Math.sin(r) * Math.sin(s));
-    return new THREE.Vector3(x, y, z)
-}
+function lglt2xyz(country,radius) {
 
+    let longitude = country[0]
+    let latitude = country[1]
+
+    const r = degreeToRadian(90 - longitude)
+    const s = degreeToRadian(latitude + (180))
+
+    const x = (-radius * Math.sin(r) * Math.cos(s))
+    const y = (radius * Math.cos(r))
+    const z = (radius * Math.sin(r) * Math.sin(s))
+
+    return new THREE.Vector3(x, y, z)
+
+}
 
 
 function init(target=null, showStat=true) {
@@ -129,26 +136,27 @@ function init(target=null, showStat=true) {
 
 function main() {
 
-    let VietNam = lglt2xyz ( 14.05, 108.27, globeRadius);
-    let American = lglt2xyz ( 41.81, -94.40, globeRadius);
-    let China = lglt2xyz ( 37.98, 103.37, globeRadius)
-    let Belarus = lglt2xyz (53.00, 28.00, globeRadius);
-    let Cameroon = lglt2xyz (6, 12, globeRadius);
-
+    let VietNam = lglt2xyz ( country.VietNam, param.globeRadius);
+    let American = lglt2xyz ( country.American, param.globeRadius);
+    let China = lglt2xyz ( country.China, param.globeRadius)
+    let Belarus = lglt2xyz ( country.Belarus, param.globeRadius);
+    let Cameroon = lglt2xyz (country.Cameroon, param.globeRadius);
 
     //Add Pin Location
-    AddPin(VietNam.x, VietNam.y, VietNam.z);
-    AddPin(American.x, American.y, American.z);
-    AddPin(China.x, China.y, China.z);
+    AddPin(VietNam);
+    AddPin(American);
+    AddPin(China);
+    AddPin(Belarus);
+    AddPin(Cameroon);
 
-    //curve
-    getCurve(VietNam, American);
-    getCurve(VietNam, China);
-    getCurve(VietNam, Belarus);
-    getCurve(VietNam, Cameroon);
+    var VN = new curve.Curves(VietNam, American).getCurve()
     
+    // curve.getCurve(VietNam, American);
+    // curve.getCurve(VietNam, China);
+    // curve.getCurve(VietNam, Belarus);
+    // curve.getCurve(VietNam, Cameroon);
     
-
+    //DrawGlobe
     DrawGlobe();
     DrawSphereDot();
     Light();
@@ -156,56 +164,23 @@ function main() {
 
 };
 
-function getCurve(p1, p2) {
+function AddPin( country ) {
 
-    let v1 = new THREE.Vector3(p1.x, p1.y , p1.z);
-    let v2 = new THREE.Vector3(p2.x, p2.y, p2.z);
-    let pointCount = 20;
-
-    let points = []
-
-    for (let i = 0; i < pointCount; i++) {
-        let p = new THREE.Vector3().lerpVectors(v1, v2, ( i/pointCount ));
-        p.normalize()
-        p.multiplyScalar(globeRadius)
-
-        p.multiplyScalar(1 + 0.2*Math.sin(Math.PI*i/pointCount))
-        
-        //console.log(p.x);
-        points.push(p)
-    }
-
-    let path = new THREE.CatmullRomCurve3(points);
-    //console.log(path);
-
-    const geometry = new THREE.TubeGeometry (path, 64, strokeSize, 32, false);
-    const material = new THREE.MeshNormalMaterial();
-    const mesh = new THREE.Mesh ( geometry, material);
-    scene.add( mesh )
-
-}
-
-
-function AddPin(x,y,z) {
-
-    //add pin
     let mesh = new THREE.Mesh(
         new THREE.SphereBufferGeometry(2,20,20),
         new THREE.MeshNormalMaterial()
     )
 
-    mesh.position.set(x,y,z);
+    mesh.position.set(country.x,country.y,country.z);
     scene.add(mesh);
 
 }
-
 
 function DrawGlobe() {
 
     const loader = new THREE.TextureLoader();
     
     const material = new THREE.MeshBasicMaterial({
-        //color: 0xFF8844,
         transparent: true,
         side: THREE.DoubleSide,
         alphaTest: 0.5,
@@ -213,7 +188,7 @@ function DrawGlobe() {
         });
     
     const materialMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(globeRadius-5,32,32),
+        new THREE.SphereGeometry(param.globeRadius-5,32,32),
         material
     )
 
@@ -265,12 +240,10 @@ function DrawSphereDot() {
             TransformMatrix( matrix );
             //set matrix transformation
             mesh.setMatrixAt( t, matrix );
-
         }
     }
 
     scene.add( mesh );
-
 
 }
 
@@ -291,16 +264,29 @@ function Light() {
 }
 
 
-
 function onWindowResize() {
+
     camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+
 }
 
 function animate() {
 
     requestAnimationFrame( animate );
+
+
+
+    //curve.icr+= 80;
+
+    // curve.geometry.setDrawRange(0, curve.icr);
+
+    // if (icr > 14000) {
+    //     curve.icr = 0;
+    //     console.log(curve.icr)
+    // } 
+
     controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
     //DrawSphereDot();
     render();
@@ -309,8 +295,6 @@ function animate() {
 }
 
 function render() {
-    
     renderer.setClearColor( 0x000000, 0 ); // the default
     renderer.render( scene, camera );
-
 }
