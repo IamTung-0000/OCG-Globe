@@ -185,7 +185,7 @@ function init(target=null, showStat=true) {
     }
 
     camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
-    camera.position.set( 0, 0, -300 );
+    camera.position.set( 0, 0, -150 );
 
 
     // controls
@@ -260,7 +260,7 @@ function DrawGlobe() {
     const loader = new THREE.TextureLoader();
     
     const material = new THREE.MeshBasicMaterial({
-        transparent: true,
+        transparent: false,
         side: THREE.DoubleSide,
         alphaTest: 0.5,
         map: loader.load('https://iamtung-0000.github.io/OCG-Globe/textures/earth_region.png'),
