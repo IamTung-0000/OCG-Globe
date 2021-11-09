@@ -167,7 +167,7 @@ function lglt2xyz(country,radius) {
 function init(target=null, showStat=true) {
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xFFFFFF );
+    scene.background = new THREE.Color( 0xF7F9FA );
     //scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true} );
