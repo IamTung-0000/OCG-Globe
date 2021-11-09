@@ -1,7 +1,7 @@
 import * as THREE from './build/three.module.js';
 import Stats from './jsm/libs/stats.module.js';
 import { OrbitControls } from './jsm/controls/OrbitControls.js';
-import { SVGLoader } from './jsm/loaders/SVGLoader.js';
+//import { SVGLoader } from './jsm/loaders/SVGLoader.js';
 
 import * as param from './Param.js'
 import * as country from './Country.js'
