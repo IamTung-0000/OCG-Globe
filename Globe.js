@@ -55,7 +55,7 @@ function loadLogo(scale, position) {
     // load a SVG resource
     loader.load(
         // resource URL
-        'Assets/LogoAsset-02.svg',
+        'https://iamtung-0000.github.io/OCG-Globe/Assets/LogoAsset-02.svg',
         // called when the resource is loaded
         function ( data ) {
 
