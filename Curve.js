@@ -2,16 +2,23 @@ import * as globe from './Globe.js'
 import * as param from './Param.js'
 import * as THREE from './build/three.module.js';
 
-export let geometry
-export let mesh
+
 export let icr = 0
+// const geometry
+// const mesh
 
 
-export function Curves (p1, p2) {
+
+
+export function Curves (p1, p2, geometry, mesh) {
+
+    this.geometry = geometry
+    this.mesh = mesh
 
     this.p1 = p1
     this.p2 = p2
     this.getCurve = getCurve;
+
     
 }
 
@@ -33,15 +40,17 @@ export function getCurve() {
 
     let path = new THREE.CatmullRomCurve3(points);
 
-    /*const*/ geometry = new THREE.TubeBufferGeometry (path, 64, param.strokeSize, 32, false);
+    const samples = path.getPoints( points.length * pointCount );
+
+    this.geometry = new THREE.TubeBufferGeometry( path, 64, param.strokeSize, 8, false );
+
     const material = new THREE.MeshNormalMaterial();
-    /*const*/ mesh = new THREE.Mesh ( geometry, material );
+
+    this.mesh = new THREE.Line ( this.geometry, material );
+    console.log(this.mesh)
 
 
-
-
-
-    globe.scene.add( mesh )
+    globe.scene.add( this.mesh )
 
 
 }

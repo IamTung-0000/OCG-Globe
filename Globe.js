@@ -15,6 +15,12 @@ export let latitude, longitude;
 
 let VietNam,American,China,Belarus,Cameroon 
 
+var VN_US, VN_CH, VN_BR, VN_CR
+var US_VN
+
+let icr = 0
+
+
 
 
 const objects = [];
@@ -136,11 +142,11 @@ function init(target=null, showStat=true) {
 
 function main() {
 
-    let VietNam = lglt2xyz ( country.VietNam, param.globeRadius);
-    let American = lglt2xyz ( country.American, param.globeRadius);
-    let China = lglt2xyz ( country.China, param.globeRadius)
-    let Belarus = lglt2xyz ( country.Belarus, param.globeRadius);
-    let Cameroon = lglt2xyz (country.Cameroon, param.globeRadius);
+    VietNam = lglt2xyz ( country.VietNam, param.globeRadius);
+    American = lglt2xyz ( country.American, param.globeRadius);
+    China = lglt2xyz ( country.China, param.globeRadius)
+    Belarus = lglt2xyz ( country.Belarus, param.globeRadius);
+    Cameroon = lglt2xyz (country.Cameroon, param.globeRadius);
 
     //Add Pin Location
     AddPin(VietNam);
@@ -149,12 +155,22 @@ function main() {
     AddPin(Belarus);
     AddPin(Cameroon);
 
-    var VN = new curve.Curves(VietNam, American).getCurve()
+    VN_US = new curve.Curves(VietNam, American)
+
+    VN_CH = new curve.Curves(China,VietNam)
+    VN_BR = new curve.Curves(VietNam, Belarus)
+    VN_CR = new curve.Curves(Cameroon, VietNam)
+
+
+    VN_US.getCurve()
     
-    // curve.getCurve(VietNam, American);
-    // curve.getCurve(VietNam, China);
-    // curve.getCurve(VietNam, Belarus);
-    // curve.getCurve(VietNam, Cameroon);
+    VN_CH.getCurve()
+    VN_BR.getCurve()
+    VN_CR.getCurve()
+
+    //console.log(VN_CR.geometry)
+
+    
     
     //DrawGlobe
     DrawGlobe();
@@ -263,7 +279,6 @@ function Light() {
 
 }
 
-
 function onWindowResize() {
 
     camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
@@ -274,25 +289,32 @@ function onWindowResize() {
 
 function animate() {
 
-    requestAnimationFrame( animate );
+    requestAnimationFrame( animate ); 
+
+    icr+= 1;
+    let LineSpeed = 50; 
+    let move = Math.floor(Math.sin(icr/LineSpeed)*3100)
+
+    if (icr > 3000) icr = 0
 
 
+    VN_US.geometry.setDrawRange(move, 3100);
 
-    //curve.icr+= 80;
+    
 
-    // curve.geometry.setDrawRange(0, curve.icr);
+    VN_CH.geometry.setDrawRange(move, 3100);
 
-    // if (icr > 14000) {
-    //     curve.icr = 0;
-    //     console.log(curve.icr)
-    // } 
+    VN_BR.geometry.setDrawRange(move, 3100);
 
+    VN_CR.geometry.setDrawRange(move, 3100);
+    
     controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
-    //DrawSphereDot();
     render();
     stats.update()
 
 }
+
+
 
 function render() {
     renderer.setClearColor( 0x000000, 0 ); // the default
