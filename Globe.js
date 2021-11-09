@@ -22,11 +22,7 @@ var shapes
 let icr = 0
 
 
-
-
 const objects = [];
-
-
 
 
 function ExtrudeSVG (shapes, scale, position) {
