@@ -87,8 +87,6 @@ function loadLogo(scale, position) {
 
 
 
-
-
 function createStatsGUI() {
 
     var thisParent;
@@ -166,7 +164,6 @@ function lglt2xyz(country,radius) {
 
 }
 
-
 function init(target=null, showStat=true) {
 
     scene = new THREE.Scene();
@@ -188,7 +185,7 @@ function init(target=null, showStat=true) {
     }
 
     camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
-    camera.position.set( 0, 0, -400 );
+    camera.position.set( 0, 0, -200 );
 
 
     // controls
@@ -197,8 +194,8 @@ function init(target=null, showStat=true) {
     controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
-    controls.minDistance = 500;
-    controls.maxDistance = 500;
+    controls.enableZoom = false;
+    controls.enablePan = false;
     controls.maxPolarAngle = Math.PI / 2;
 
 }
@@ -206,7 +203,6 @@ function init(target=null, showStat=true) {
 
 function main() {
     
-
     VietNam = lglt2xyz ( country.VietNam, param.globeRadius);
     American = lglt2xyz ( country.American, param.globeRadius);
     China = lglt2xyz ( country.China, param.globeRadius)
@@ -219,8 +215,6 @@ function main() {
     loadLogo(0.03,China);
     loadLogo(0.03,Belarus);
     loadLogo(0.03,Cameroon);
-
-
 
 
     //Add Pin Location
