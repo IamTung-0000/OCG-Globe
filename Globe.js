@@ -185,7 +185,7 @@ function init(target=null, showStat=true) {
     }
 
     camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
-    camera.position.set( 0, 0, -200 );
+    camera.position.set( 0, 0, -250 );
 
 
     // controls
