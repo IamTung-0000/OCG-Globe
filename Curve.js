@@ -3,13 +3,6 @@ import * as param from './Param.js'
 import * as THREE from './build/three.module.js';
 
 
-export let icr = 0
-// const geometry
-// const mesh
-
-
-
-
 export function Curves (p1, p2, geometry, mesh) {
 
     this.geometry = geometry

@@ -1,6 +1,7 @@
 import * as THREE from './build/three.module.js';
 import Stats from './jsm/libs/stats.module.js';
 import { OrbitControls } from './jsm/controls/OrbitControls.js';
+import { SVGLoader } from './jsm/loaders/SVGLoader.js';
 
 import * as param from './Param.js'
 import * as country from './Country.js'
@@ -16,7 +17,7 @@ export let latitude, longitude;
 let VietNam,American,China,Belarus,Cameroon 
 
 var VN_US, VN_CH, VN_BR, VN_CR
-var US_VN
+var shapes
 
 let icr = 0
 
@@ -24,6 +25,72 @@ let icr = 0
 
 
 const objects = [];
+
+
+
+
+function ExtrudeSVG (shapes, scale, position) {
+
+    const extrudeSettings = {
+        steps: 2,
+        depth: 16,
+        bevelEnabled: true,
+        bevelThickness: 1,
+        bevelSize: 1,
+        bevelOffset: 0,
+        bevelSegments: 1
+    };
+
+    const geometry = new THREE.ExtrudeGeometry( shapes, extrudeSettings );
+    const material = new THREE.MeshBasicMaterial( { color: 0x121212 } );
+    const mesh = new THREE.Mesh( geometry, material ) ;
+    mesh.scale.set(scale,scale,scale);
+    mesh.position.set(position.x, position.y, position.z)
+    scene.add( mesh );
+
+}
+
+
+// instantiate a loader
+const loader = new SVGLoader();
+
+function loadLogo(scale, position) {
+    // load a SVG resource
+    loader.load(
+        // resource URL
+        'Assets/LogoAsset-02.svg',
+        // called when the resource is loaded
+        function ( data ) {
+
+            const paths = data.paths;
+            const group = new THREE.Group();
+
+            for ( let i = 0; i < paths.length; i ++ ) {
+                const path = paths[ i ];
+                const material = new THREE.MeshBasicMaterial( {
+                    color: path.color,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                } );
+                shapes = SVGLoader.createShapes( path );
+            }
+
+            ExtrudeSVG(shapes,scale,position)
+
+        },
+
+        // called when loading is in progresses
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+        },
+    );
+}
+
+
+
+
 
 function createStatsGUI() {
 
@@ -107,7 +174,7 @@ function init(target=null, showStat=true) {
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xFFFFFF );
-    scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+    //scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true} );
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -123,8 +190,8 @@ function init(target=null, showStat=true) {
         document.body.appendChild( stats.dom );
     }
 
-    camera = new THREE.PerspectiveCamera( 60, target.offsetWidth / target.offsetHeight, 1, 1000 );
-    camera.position.set( 400, 200, 0 );
+    camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
+    camera.position.set( 0, 0, -400 );
 
 
     // controls
@@ -133,7 +200,7 @@ function init(target=null, showStat=true) {
     controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
-    controls.minDistance = 100;
+    controls.minDistance = 500;
     controls.maxDistance = 500;
     controls.maxPolarAngle = Math.PI / 2;
 
@@ -141,12 +208,23 @@ function init(target=null, showStat=true) {
 
 
 function main() {
+    
 
     VietNam = lglt2xyz ( country.VietNam, param.globeRadius);
     American = lglt2xyz ( country.American, param.globeRadius);
     China = lglt2xyz ( country.China, param.globeRadius)
     Belarus = lglt2xyz ( country.Belarus, param.globeRadius);
     Cameroon = lglt2xyz (country.Cameroon, param.globeRadius);
+
+    //
+    loadLogo(0.03,VietNam);
+    loadLogo(0.03,American);
+    loadLogo(0.03,China);
+    loadLogo(0.03,Belarus);
+    loadLogo(0.03,Cameroon);
+
+
+
 
     //Add Pin Location
     AddPin(VietNam);
@@ -156,25 +234,18 @@ function main() {
     AddPin(Cameroon);
 
     VN_US = new curve.Curves(VietNam, American)
-
     VN_CH = new curve.Curves(China,VietNam)
     VN_BR = new curve.Curves(VietNam, Belarus)
     VN_CR = new curve.Curves(Cameroon, VietNam)
 
-
     VN_US.getCurve()
-    
     VN_CH.getCurve()
     VN_BR.getCurve()
-    VN_CR.getCurve()
-
-    //console.log(VN_CR.geometry)
+    VN_CR.getCurve()   
 
     
-    
-    //DrawGlobe
     DrawGlobe();
-    DrawSphereDot();
+    //DrawSphereDot();
     Light();
     window.addEventListener( 'resize', onWindowResize );
 
@@ -183,7 +254,7 @@ function main() {
 function AddPin( country ) {
 
     let mesh = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(2,20,20),
+        new THREE.SphereBufferGeometry(1,20,20),
         new THREE.MeshNormalMaterial()
     )
 
@@ -204,7 +275,7 @@ function DrawGlobe() {
         });
     
     const materialMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(param.globeRadius-5,32,32),
+        new THREE.SphereGeometry(param.globeRadius-2,32,32),
         material
     )
 
@@ -297,10 +368,7 @@ function animate() {
 
     if (icr > 3000) icr = 0
 
-
     VN_US.geometry.setDrawRange(move, 3100);
-
-    
 
     VN_CH.geometry.setDrawRange(move, 3100);
 
