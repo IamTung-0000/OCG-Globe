@@ -196,6 +196,7 @@ function init(target=null, showStat=true) {
     controls.screenSpacePanning = false;
     controls.enableZoom = false;
     controls.enablePan = false;
+    controls.autoRotate = true;
     controls.maxPolarAngle = Math.PI / 2;
 
 }
