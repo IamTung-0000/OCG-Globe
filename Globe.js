@@ -1,12 +1,23 @@
+/*
+
+ThreeJS Globe Animation for OCG Website
+Author: IamTung
+email: iamtung.asia@gmailcom
+
+*/
+
 import * as THREE from './build/three.module.js';
 import Stats from './jsm/libs/stats.module.js';
 import { OrbitControls } from './jsm/controls/OrbitControls.js';
-import { SVGLoader } from './jsm/loaders/SVGLoader.js';
-//tung
+
+import * as glow from './build/threex.atmospherematerial.js';
+
+
 
 import * as param from './Param.js'
 import * as country from './Country.js'
 import * as curve from './Curve.js'
+import * as svg from './LogoSVGProcess.js'
 
 
 export let camera, controls, scene, renderer;
@@ -18,73 +29,12 @@ export let latitude, longitude;
 let VietNam,American,China,Belarus,Cameroon 
 
 var VN_US, VN_CH, VN_BR, VN_CR
+
 var shapes
 
 let icr = 0
 
-
 const objects = [];
-
-
-function ExtrudeSVG (shapes, scale, position) {
-
-    const extrudeSettings = {
-        steps: 2,
-        depth: 16,
-        bevelEnabled: true,
-        bevelThickness: 1,
-        bevelSize: 1,
-        bevelOffset: 0,
-        bevelSegments: 1
-    };
-
-    const geometry = new THREE.ExtrudeGeometry( shapes, extrudeSettings );
-    const material = new THREE.MeshBasicMaterial( { color: 0x121212 } );
-    const mesh = new THREE.Mesh( geometry, material ) ;
-    mesh.scale.set(scale,scale,scale);
-    mesh.position.set(position.x, position.y, position.z)
-    scene.add( mesh );
-
-}
-
-
-// instantiate a loader
-const loader = new SVGLoader();
-
-function loadLogo(scale, position) {
-    // load a SVG resource
-    loader.load(
-        // resource URL
-        'https://iamtung-0000.github.io/OCG-Globe/Assets/LogoAsset-02.svg',
-        // called when the resource is loaded
-        function ( data ) {
-
-            const paths = data.paths;
-            const group = new THREE.Group();
-
-            for ( let i = 0; i < paths.length; i ++ ) {
-                const path = paths[ i ];
-                const material = new THREE.MeshBasicMaterial( {
-                    color: path.color,
-                    side: THREE.DoubleSide,
-                    depthWrite: false
-                } );
-                shapes = SVGLoader.createShapes( path );
-            }
-
-            ExtrudeSVG(shapes,scale,position)
-
-        },
-
-        // called when loading is in progresses
-        function ( xhr ) {
-
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-        },
-    );
-}
-
 
 
 function createStatsGUI() {
@@ -134,8 +84,6 @@ const TransformMatrix = function () {
 
 }();
 
-
-const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 init(aboutGlobe);
 main();
@@ -203,20 +151,20 @@ function init(target=null, showStat=true) {
 
 
 function main() {
-    
+
+    //Convert country cordinate to XYZ
     VietNam = lglt2xyz ( country.VietNam, param.globeRadius);
     American = lglt2xyz ( country.American, param.globeRadius);
     China = lglt2xyz ( country.China, param.globeRadius)
     Belarus = lglt2xyz ( country.Belarus, param.globeRadius);
     Cameroon = lglt2xyz (country.Cameroon, param.globeRadius);
 
-    //
-    loadLogo(0.03,VietNam);
-    loadLogo(0.03,American);
-    loadLogo(0.03,China);
-    loadLogo(0.03,Belarus);
-    loadLogo(0.03,Cameroon);
-
+    //Add Logo Location
+    // svg.loadLogo(0.03,VietNam);
+    // svg.loadLogo(0.03,American);
+    // svg.loadLogo(0.03,China);
+    // svg.loadLogo(0.03,Belarus);
+    // svg.loadLogo(0.03,Cameroon);
 
     //Add Pin Location
     AddPin(VietNam);
@@ -225,20 +173,27 @@ function main() {
     AddPin(Belarus);
     AddPin(Cameroon);
 
+    //create Curve Object
     VN_US = new curve.Curves(VietNam, American)
     VN_CH = new curve.Curves(China,VietNam)
     VN_BR = new curve.Curves(VietNam, Belarus)
     VN_CR = new curve.Curves(Cameroon, VietNam)
 
+    //Draw Curve
     VN_US.getCurve()
     VN_CH.getCurve()
     VN_BR.getCurve()
     VN_CR.getCurve()   
 
-    
+    //Draw Globe Sphere
     DrawGlobe();
+    DrawGlobeAtmosphere();
+
     //DrawSphereDot();
+
+    //Draw Light
     Light();
+
     window.addEventListener( 'resize', onWindowResize );
 
 };
@@ -263,11 +218,33 @@ function DrawGlobe() {
         transparent: false,
         side: THREE.DoubleSide,
         alphaTest: 0.5,
-        map: loader.load('https://iamtung-0000.github.io/OCG-Globe/textures/earth_region.png'),
+        //map: loader.load('https://iamtung-0000.github.io/OCG-Globe/textures/earth_region.png'),
+        map: loader.load('https://iamtung-0000.github.io/OCG-Globe//textures/earth_region_dot.png'),
         });
+
     
     const materialMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(param.globeRadius-2,32,32),
+        new THREE.SphereGeometry(param.globeRadius-2,param.sphereLon,param.sphereLat),
+        material
+    )
+
+    scene.add(materialMesh);
+
+};
+
+function DrawGlobeAtmosphere() {
+
+    const loader = new THREE.TextureLoader();
+    
+
+    var material	= glow.THREEx.createAtmosphereMaterial()
+
+    material.uniforms.glowColor.value	= new THREE.Color(0x54bdfc)
+	material.uniforms.coeficient.value	= 0.5
+	material.uniforms.power.value		= 1.4
+    
+    const materialMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(param.globeRadius-2.1,param.sphereLon,param.sphereLat),
         material
     )
 
@@ -302,7 +279,7 @@ function latLonToOffsets(latitude, longitude, mapWidth, mapHeight) {
 
 function DrawSphereDot() {
 
-    const BoxGeometry = new THREE.BoxBufferGeometry( 0.5, 0.5, 0.5 );
+    const BoxGeometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
     const BoxMaterial = new THREE.MeshNormalMaterial();
     const matrix = new THREE.Matrix4();
     const mesh = new THREE.InstancedMesh( BoxGeometry, BoxMaterial, 32475 );
@@ -314,6 +291,7 @@ function DrawSphereDot() {
         for (  longitude = 0; longitude < 360; longitude += 360/(4*a) ) { 
             //find x,y offset
             const offset = latLonToOffsets(latitude, longitude, 2048, 1024);
+            
             //find alpha base on x,y
             t++;
             TransformMatrix( matrix );
@@ -354,19 +332,17 @@ function animate() {
 
     requestAnimationFrame( animate ); 
 
-    icr+= 1;
-    let LineSpeed = 50; 
-    let move = Math.floor(Math.sin(icr/LineSpeed)*3100)
+    //Animate Line
 
+    icr+= 1;
+    let move = Math.floor(Math.sin(icr/param.LineSpeed)*3100)
     if (icr > 3000) icr = 0
 
     VN_US.geometry.setDrawRange(move, 3100);
-
     VN_CH.geometry.setDrawRange(move, 3100);
-
     VN_BR.geometry.setDrawRange(move, 3100);
-
     VN_CR.geometry.setDrawRange(move, 3100);
+    //
     
     controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
     render();
