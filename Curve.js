@@ -19,7 +19,7 @@ export function getCurve() {
 
     let v1 = new THREE.Vector3(this.p1.x, this.p1.y , this.p1.z);
     let v2 = new THREE.Vector3(this.p2.x, this.p2.y, this.p2.z);
-    let pointCount = 20;
+    let pointCount = 64;
 
     let points = []
 
@@ -35,7 +35,7 @@ export function getCurve() {
 
     const samples = path.getPoints( points.length * pointCount );
 
-    this.geometry = new THREE.TubeBufferGeometry( path, 64, param.strokeSize, 8, false );
+    this.geometry = new THREE.TubeBufferGeometry( path, 128, param.strokeSize, 8, false );
 
     const material = new THREE.MeshNormalMaterial();
 

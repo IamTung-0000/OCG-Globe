@@ -26,9 +26,9 @@ export let material;
 export let stats, container;
 export let latitude, longitude;
 
-let VietNam,American,China,Belarus,Cameroon 
+let VietNam,American,China,Belarus,Cameroon,Argentina, Canada
+var VN_US, VN_CH, VN_BR, VN_CR, VN_AR, VN_CA
 
-var VN_US, VN_CH, VN_BR, VN_CR
 
 var shapes
 
@@ -158,6 +158,8 @@ function main() {
     China = lglt2xyz ( country.China, param.globeRadius)
     Belarus = lglt2xyz ( country.Belarus, param.globeRadius);
     Cameroon = lglt2xyz (country.Cameroon, param.globeRadius);
+    Argentina = lglt2xyz (country.Argentina, param.globeRadius);
+    Canada = lglt2xyz (country.Canada, param.globeRadius);
 
     //Add Logo Location
     // svg.loadLogo(0.03,VietNam);
@@ -172,18 +174,23 @@ function main() {
     AddPin(China);
     AddPin(Belarus);
     AddPin(Cameroon);
+    AddPin(Argentina);
 
     //create Curve Object
     VN_US = new curve.Curves(VietNam, American)
     VN_CH = new curve.Curves(China,VietNam)
     VN_BR = new curve.Curves(VietNam, Belarus)
     VN_CR = new curve.Curves(Cameroon, VietNam)
+    VN_AR = new curve.Curves(VietNam, Argentina)
+    VN_CA = new curve.Curves(Canada, VietNam)
 
     //Draw Curve
     VN_US.getCurve()
     VN_CH.getCurve()
     VN_BR.getCurve()
     VN_CR.getCurve()   
+    VN_AR.getCurve();
+    VN_CA.getCurve();
 
     //Draw Globe Sphere
     DrawGlobe();
@@ -342,6 +349,8 @@ function animate() {
     VN_CH.geometry.setDrawRange(move, 3100);
     VN_BR.geometry.setDrawRange(move, 3100);
     VN_CR.geometry.setDrawRange(move, 3100);
+    VN_AR.geometry.setDrawRange(move, 3100);
+    VN_CA.geometry.setDrawRange(move, 3100);
     //
     
     controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
