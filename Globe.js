@@ -112,7 +112,7 @@ function lglt2xyz(country,radius) {
 
 }
 
-function init(target=null, showStat=true) {
+function init(target=null, showStat=false) {
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xF7F9FA );

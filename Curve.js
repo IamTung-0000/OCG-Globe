@@ -40,7 +40,6 @@ export function getCurve() {
     const material = new THREE.MeshNormalMaterial();
 
     this.mesh = new THREE.Line ( this.geometry, material );
-    console.log(this.mesh)
 
 
     globe.scene.add( this.mesh )
