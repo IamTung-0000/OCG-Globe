@@ -355,7 +355,7 @@ function animate() {
     
     controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
     render();
-    stats.update()
+    // stats.update()
 
 }
 
