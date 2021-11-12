@@ -120,7 +120,11 @@ function init(target=null, showStat=false) {
 
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: false} );
     renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( target.offsetWidth, target.offsetHeight );
+    if (window.innerWidth > 640) {
+        renderer.setSize( target.offsetWidth, target.offsetHeight );
+    } else {
+        renderer.setSize( window.innerWidth, window.innerWidth );
+    }
     if (target) {
         target.appendChild( renderer.domElement );
     } else {
