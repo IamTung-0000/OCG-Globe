@@ -33,6 +33,8 @@ var VN_US, VN_CH, VN_BR, VN_CR, VN_AR, VN_CA
 var shapes
 
 let icr = 0
+let renderDefer
+let renderDefering = false
 
 const objects = [];
 
@@ -333,14 +335,21 @@ function Light() {
 
 function onWindowResize() {
 
-    camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
-    camera.updateProjectionMatrix();
-    // renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
-    if (window.innerWidth > 640) {
-        renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
-    } else {
-        renderer.setSize( window.innerWidth, window.innerWidth );
-    }
+    // Clear previous timeout every time resize event triggered
+    clearTimeout(renderDefer)
+
+    // Set timeout: Wait 100ms before re-render the canvas
+    let timeout = 100
+    renderDefer = setTimeout(() => {
+        camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
+        camera.updateProjectionMatrix();
+        // renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+        if (window.innerWidth > 640) {
+            renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+        } else {
+            renderer.setSize( window.innerWidth, window.innerWidth );
+        }
+    }, timeout);
 
 }
 
