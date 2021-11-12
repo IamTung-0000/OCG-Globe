@@ -122,10 +122,11 @@ function init(target=null, showStat=false) {
 
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: false} );
     renderer.setPixelRatio( window.devicePixelRatio );
-    if (window.innerWidth > 640) {
-        renderer.setSize( target.offsetWidth, target.offsetHeight );
-    } else {
+    let mobile = (window.innerWidth <= 640) ? true : false;
+    if (mobile) {
         renderer.setSize( window.innerWidth, window.innerWidth );
+    } else {
+        renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
     }
     if (target) {
         target.appendChild( renderer.domElement );
@@ -137,8 +138,13 @@ function init(target=null, showStat=false) {
         stats = new Stats();
         document.body.appendChild( stats.dom );
     }
-
-    camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
+    
+    if (mobile) {
+        camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerWidth, 1, 1000 );
+    } else {
+        camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
+    }
+    // camera = new THREE.PerspectiveCamera( 50, target.offsetWidth / target.offsetHeight, 1, 1000 );
     camera.position.set( 0, 0, -280 );
 
 
