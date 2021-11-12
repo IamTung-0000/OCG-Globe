@@ -341,13 +341,18 @@ function onWindowResize() {
     // Set timeout: Wait 100ms before re-render the canvas
     let timeout = 100
     renderDefer = setTimeout(() => {
-        camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
-        camera.updateProjectionMatrix();
-        // renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
-        if (window.innerWidth > 640) {
-            renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+        let mobile = (window.innerWidth <= 640) ? true : false;
+
+        if (mobile) {
+            camera.aspect = window.innerWidth / window.innerWidth;
         } else {
+            camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
+        }
+        camera.updateProjectionMatrix();
+        if (mobile) {
             renderer.setSize( window.innerWidth, window.innerWidth );
+        } else {
+            renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
         }
     }, timeout);
 
