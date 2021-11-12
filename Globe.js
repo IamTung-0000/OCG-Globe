@@ -331,7 +331,12 @@ function onWindowResize() {
 
     camera.aspect = aboutGlobe.offsetWidth / aboutGlobe.offsetHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+    // renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+    if (window.innerWidth > 640) {
+        renderer.setSize( aboutGlobe.offsetWidth, aboutGlobe.offsetHeight );
+    } else {
+        renderer.setSize( window.innerWidth, window.innerWidth );
+    }
 
 }
 
